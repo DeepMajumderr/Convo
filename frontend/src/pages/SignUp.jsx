@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { serverUrl } from '../main'
+import { useDispatch, useSelector } from 'react-redux'
+import { setUserData } from '../redux/userSlice'
 
 const SignUp = () => {
 
@@ -13,6 +15,8 @@ const SignUp = () => {
   const [password, setpassword] = useState("")
   const [loading, setloading] = useState(false)
   const [error, seterror] = useState("")
+  const dispatch = useDispatch()
+
 
   const handleSignUp = async (e) => {
     e.preventDefault()
@@ -26,7 +30,7 @@ const SignUp = () => {
         },
         { withCredentials: true }
       )
-      console.log(result.data)
+      dispatch(setUserData(result.data))
       setuserName("")
       setemail("")
       setpassword("")

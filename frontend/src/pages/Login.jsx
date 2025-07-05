@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { serverUrl } from '../main'
 import axios from 'axios'
+import { useDispatch } from 'react-redux'
+import { setUserData } from '../redux/userSlice'
 
 const Login = () => {
 
@@ -13,6 +15,8 @@ const Login = () => {
   const [password, setpassword] = useState("")
   const [error, seterror] = useState("")
   const [loading, setloading] = useState(false)
+  const dispatch = useDispatch()
+
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -25,7 +29,7 @@ const Login = () => {
         },
         { withCredentials: true }
       )
-      console.log(result.data)
+      dispatch(setUserData(result.data))
       setemail("")
       setpassword("")
       setloading(false)
@@ -67,7 +71,7 @@ const Login = () => {
             >{show ? "Hide" : "Show"}</span>
           </div>
 
-          {error && <p className='text-red-500'>{error}!</p> }
+          {error && <p className='text-red-500'>{error}!</p>}
 
           <button className='px-[20px] py-[10px] bg-[#20c7ff] rounded-2xl shadow-gray-400 shadow-lg text-[20px] w-[200px]
           mt-[15px] font-semibold hover:shadow-inner' disabled={loading}>{loading ? "Loading..." : "Login"}</button>
