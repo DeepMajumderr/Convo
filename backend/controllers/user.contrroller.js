@@ -41,3 +41,16 @@ export const editProfile = async (req, res) => {
         return res.status(500).json({ messaage: `profile error ${error}` })
     }
 }
+
+export  const getOtherUsers = async(req,res) => {
+    try {
+        let users = await User.find({
+            _id:{$ne:req.userId}
+        }).select("-password")
+
+        return res.status(200).json(users)
+
+    } catch (error) {
+         return res.status(500).json({ messaage: `get other user error ${error}` })
+    }
+}
