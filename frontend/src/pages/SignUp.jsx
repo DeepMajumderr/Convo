@@ -31,6 +31,7 @@ const SignUp = () => {
         { withCredentials: true }
       )
       dispatch(setUserData(result.data))
+      navigate("/profile")
       setuserName("")
       setemail("")
       setpassword("")

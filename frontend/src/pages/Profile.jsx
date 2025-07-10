@@ -53,6 +53,7 @@ const Profile = () => {
 
             setsaving(false)
             dispatch(setUserData(result.data))
+            navigate("/")
         } catch (error) {
             setsaving(false)
         }
@@ -67,13 +68,13 @@ const Profile = () => {
             </div>
             <div className=' bg-white rounded-full
             border-4 border-[#20c7ff] shadow-gray-400 shadow-lg relative' onClick={() => image.current.click()}>
-                <div className='w-[200px] h-[200px] rounded-full overflow-hidden flex justify-center items-center'>
+                <div className='w-[200px] h-[200px] rounded-full overflow-hidden flex justify-center cursor-pointer items-center'>
                     <img src={frontendImage} className='h-[100%]' />
                 </div>
 
-                <div className='absolute bottom-4 text-gray-700 right-5 w-[30px] h-[30px] rounded-full bg-[#20c7ff]
-                '>
-                    <CiCamera className='absolute bottom-4 text-gray-700 right-5 w-[28px] h-[28px] ' />
+                <div className='absolute bottom-4 right-5 w-[30px] h-[30px] rounded-full bg-[#20c7ff] 
+                cursor-pointer flex justify-center items-center'>
+                    <CiCamera className='w-[18px] h-[18px] text-gray-900' />
                 </div>
 
             </div>

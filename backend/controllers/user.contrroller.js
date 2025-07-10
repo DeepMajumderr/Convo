@@ -29,7 +29,7 @@ export const editProfile = async (req, res) => {
         let user = await User.findByIdAndUpdate(req.userId, {
             name,
             image
-        })
+        }, {new: true})
 
         if (!user) {
             return res.status(400).json({ message: "user not found !" })

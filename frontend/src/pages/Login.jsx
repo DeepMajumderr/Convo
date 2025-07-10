@@ -30,6 +30,7 @@ const Login = () => {
         { withCredentials: true }
       )
       dispatch(setUserData(result.data))
+      navigate("/")
       setemail("")
       setpassword("")
       setloading(false)

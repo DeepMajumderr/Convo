@@ -19,7 +19,7 @@ const getCurrentUser = () => {
             }
         }
         fetchUser()
-    }, [userData])
+    }, [])
     
 }
 
