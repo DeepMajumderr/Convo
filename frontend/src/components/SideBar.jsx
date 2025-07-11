@@ -6,11 +6,11 @@ import { RxCross2 } from "react-icons/rx";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import axios from 'axios'
 import { serverUrl } from '../main';
-import { setOtherUsers, setUserData } from '../redux/userSlice';
+import { setOtherUsers, setSelectedUser, setUserData } from '../redux/userSlice';
 import { useNavigate } from 'react-router-dom';
 
 const SideBar = () => {
-    let { userData, otherUsers } = useSelector(state => state.user)
+    let { userData, otherUsers,selectedUser } = useSelector(state => state.user)
     let dispatch = useDispatch()
     let navigate = useNavigate()
 
@@ -31,7 +31,7 @@ const SideBar = () => {
     }
 
     return (
-        <div className="lg:w-[30%] w-full h-screen bg-slate-200 relative flex flex-col">
+        <div className={`lg:w-[30%] w-full h-screen bg-slate-200 relative flex-col ${!selectedUser ? "flex" : "hidden"} lg:flex`}>
 
 
             {/* Logout Button */}
@@ -71,7 +71,7 @@ const SideBar = () => {
 
                     {!search &&
                         otherUsers?.map((user) => (
-                            <div className='w-[60px] h-[60px] mt-[10px] rounded-full overflow-hidden flex justify-center items-center
+                            <div key={user._id} className='w-[60px] h-[60px] mt-[10px] rounded-full overflow-hidden flex justify-center items-center
                     shadow-gray-500 shadow-lg'>
                                 <img src={user.image || emptydp} className='h-[100%]' />
                             </div>
@@ -84,8 +84,8 @@ const SideBar = () => {
             <div className='flex-1 overflow-auto flex flex-col gap-[20px] items-center mt-[10px] px-2'>
                 {
                     otherUsers?.map((user) => (
-                        <div className='w-[95%] h-[60px] flex items-center gap-[20x] bg-white shadow-gray-500  shadow-lg
-                        rounded-full hover:bg-[#b2ccdf] cursor-pointer'>
+                        <div key={user._id} className='w-[95%] h-[60px] flex items-center gap-[20x] bg-white shadow-gray-500  shadow-lg
+                        rounded-full hover:bg-[#b2ccdf] gap-[5px] cursor-pointer'onClick={() => dispatch(setSelectedUser(user))}>
                             <div className='w-[60px] h-[60px] rounded-full overflow-hidden flex justify-center items-center
                     shadow-gray-500 shadow-lg'>
                                 <img src={user.image || emptydp} className='h-[100%]' />
