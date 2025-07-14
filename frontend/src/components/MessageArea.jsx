@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { IoMdArrowBack } from "react-icons/io";
 import emptydp from '../assets/emptydp.jpg';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,6 +7,10 @@ import { BsEmojiSunglasses } from "react-icons/bs";
 import { FaRegImages } from "react-icons/fa";
 import { IoMdSend } from "react-icons/io";
 import EmojiPicker from 'emoji-picker-react'
+import SenderMessage from './SenderMessage';
+import ReceiverMessage from './ReceiverMessage';
+import axios from 'axios'
+import { serverUrl } from '../main';
 
 // Optional: Import emoji picker if you're using one
 // import EmojiPicker from 'emoji-picker-react';
@@ -15,11 +19,30 @@ const MessageArea = () => {
   const { selectedUser } = useSelector(state => state.user);
   const dispatch = useDispatch();
   const [showPicker, setShowPicker] = useState(false);
-  const [message, setMessage] = useState("");
+  const [input, setinput] = useState("")
+  const [frontendImage, setfrontendImage] = useState(null)
+  const [backendImage, setbackendImage] = useState(null)
+  let image = useRef()
 
-  const handleEmojiClick = (emojiObject) => {
-    setMessage(prev => prev + emojiObject.emoji);
-  };
+  const handleSendMessage = async () => {
+    try {
+      let formData = new FormData()
+      formData("message",input)
+      if(backendImage) {
+        formData("image",backendImage)
+      }
+      let result = await axios.post(`${serverUrl}/api/message/send/${selectedUser._id}`,
+        formData,{withCredentials:true}
+      )
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const onEmojiClick = (emojiData) => {
+    setinput((prevInput) => prevInput + emojiData.emoji)
+    setShowPicker(false)
+  }
 
   return (
     <div className={`lg:w-[70%] w-full h-full flex flex-col relative bg-slate-200 ${selectedUser ? "" : "hidden lg:flex"}`}>
@@ -52,14 +75,15 @@ const MessageArea = () => {
         <div className='flex-1 flex flex-col overflow-hidden'>
 
           {/* Scrollable message list */}
-          <div className='flex-1 overflow-y-auto p-4 '>
+          <div className='flex-1 overflow-y-auto p-4 px-[20px] py-[30px] '>
 
           </div>
 
           {/* Emoji Picker */}
           {showPicker && (
-            <div className="absolute bottom-[100px] left-[20px] z-50">
-              <EmojiPicker />
+            <div className="absolute bottom-[120px] left-[20px] z-50">
+              <EmojiPicker width={250} height={350} className='shadow-lg'
+                onEmojiClick={onEmojiClick} />
             </div>
           )}
 
@@ -78,16 +102,18 @@ const MessageArea = () => {
               <div onClick={() => setShowPicker(prev => !prev)}>
                 <BsEmojiSunglasses className='w-[25px] h-[25px] text-white cursor-pointer' />
               </div>
+              
+              <input type="file" accept='image/*' ref={image} hidden />
 
               <input
                 type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                value={input}
+                onChange={(e) => setinput(e.target.value)}
                 placeholder="Message..."
                 className='flex-1 h-full px-2 text-white text-[18px] bg-transparent outline-none placeholder-white'
               />
 
-              <FaRegImages className='w-[25px] h-[25px] text-white cursor-pointer' />
+              <FaRegImages className='w-[25px] h-[25px] text-white cursor-pointer' onClick={()=>image.current.click()} />
               <IoMdSend type="submit" className='w-[25px] h-[25px] text-white cursor-pointer' />
             </form>
           </div>
