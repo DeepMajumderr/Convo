@@ -23,6 +23,8 @@ const MessageArea = () => {
   let image = useRef()
   let { messages } = useSelector(state => state.message)
 
+  
+
   const handleImage = (e) => {
     let file = e.target.files[0]
     setbackendImage(file)
@@ -86,7 +88,7 @@ const MessageArea = () => {
 
           {/* Scrollable message list */}
           <div className='flex-1 overflow-y-auto p-4 px-[20px] py-[30px]'>
-            {messages?.map((mess) => (
+            {messages && messages.map((mess) => (
               mess.sender === userData._id ? 
                 <SenderMessage key={mess._id} image={mess.image} message={mess.message} /> 
                 : 

@@ -36,7 +36,7 @@ const SideBar = () => {
 
             {/* Logout Button */}
             <div className='absolute bottom-[20px] left-[10px] w-[60px] h-[60px] bg-[#20c7ff] rounded-full flex items-center justify-center shadow-lg cursor-pointer'>
-                <RiLogoutCircleLine className='w-[25px] h-[25px]' />
+                <RiLogoutCircleLine onClick={handleLogout} className='w-[25px] h-[25px]' />
             </div>
 
             <div className='w-full h-[240px] bg-[#20c7ff] rounded-b-[30%] shadow-gray-400 shadow-lg

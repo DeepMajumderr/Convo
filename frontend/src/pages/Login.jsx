@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { serverUrl } from '../main'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
-import { setUserData } from '../redux/userSlice'
+import { setUserData,setSelectedUser } from '../redux/userSlice'
 
 const Login = () => {
 
@@ -30,6 +30,7 @@ const Login = () => {
         { withCredentials: true }
       )
       dispatch(setUserData(result.data))
+      dispatch(setSelectedUser(null))
       navigate("/")
       setemail("")
       setpassword("")

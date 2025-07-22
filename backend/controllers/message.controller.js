@@ -42,23 +42,46 @@ export const sendMessage = async (req, res) => {
     }
 }
 
+// export const getMessages = async (req, res) => {
+//     try {
+//         let sender = req.userId
+//         let {receiver}=req.params
+//         let conversation = await Conversation.findOne({
+//             participants: { $all: [sender, receiver] }
+//         }).populate("messages")
+
+//         if(!conversation) {
+//             return res.status(400).json({
+//                 message: "conversation not found"
+//             })
+//         }
+
+//         return res.status(200).json(conversation?.messages)
+
+//     } catch (error) {
+//          return res.status(500).json({ message: `get Message error ${error}` })
+//     }
+// }
+
 export const getMessages = async (req, res) => {
     try {
-        let sender = req.userId
-        let {receiver}=req.params
+        let sender = req.userId;
+        let { receiver } = req.params;
+
         let conversation = await Conversation.findOne({
             participants: { $all: [sender, receiver] }
-        }).populate("messages")
+        }).populate("messages");
 
-        if(!conversation) {
-            return res.status(400).json({
-                message: "conversation not found"
-            })
+        if (!conversation) {
+            // auto-create empty conversation
+            conversation = await Conversation.create({
+                participants: [sender, receiver],
+                messages: []
+            });
         }
 
-        return res.status(200).json(conversation?.messages)
-
+        return res.status(200).json(conversation?.messages || []);
     } catch (error) {
-         return res.status(500).json({ message: `get Message error ${error}` })
+        return res.status(500).json({ message: `get Message error ${error}` });
     }
-}
+};
