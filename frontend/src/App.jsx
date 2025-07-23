@@ -7,12 +7,25 @@ import { useSelector } from 'react-redux'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
 import getOtherUsers from './customHooks/getOtherUsers'
+import { useEffect } from 'react'
+import {io} from "socket.io-client"
+import { serverUrl } from './main'
 
 
 const App = () => {
   getCurrentUser()
   getOtherUsers()
   let {userData}=useSelector((state)=>state.user)
+
+  useEffect(() => {
+
+    const socket = io(`${serverUrl}`, {
+      query:{
+        userId:userData?._id
+      }
+    })
+
+  }, [userData])
 
   return (
     <Routes>
