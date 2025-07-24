@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { IoMdArrowBack } from "react-icons/io";
 import emptydp from '../assets/emptydp.jpg';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,8 +13,9 @@ import axios from 'axios'
 import { serverUrl } from '../main';
 import { setMessages } from '../redux/messageSlice';
 
+
 const MessageArea = () => {
-  const { selectedUser, userData } = useSelector(state => state.user);
+  const { selectedUser, userData,socket } = useSelector(state => state.user);
   const dispatch = useDispatch();
   const [showPicker, setShowPicker] = useState(false);
   const [input, setinput] = useState("")
@@ -55,6 +56,14 @@ const MessageArea = () => {
     setinput((prevInput) => prevInput + emojiData.emoji)
     setShowPicker(false)
   }
+
+  useEffect(() => {
+    socket.on("newMessage", (mess) => {
+      dispatch(setMessages([...messages,mess]))
+    })
+    return ()=>socket.off("newMessage")
+  }, [messages,setMessages])
+  
 
   return (
     <div className={`lg:w-[70%] w-full h-full flex flex-col relative bg-slate-200 ${selectedUser ? "" : "hidden lg:flex"}`}>
