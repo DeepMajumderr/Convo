@@ -15,7 +15,7 @@ import { setMessages } from '../redux/messageSlice';
 
 
 const MessageArea = () => {
-  const { selectedUser, userData,socket } = useSelector(state => state.user);
+  const { selectedUser, userData, socket } = useSelector(state => state.user);
   const dispatch = useDispatch();
   const [showPicker, setShowPicker] = useState(false);
   const [input, setinput] = useState("")
@@ -24,7 +24,7 @@ const MessageArea = () => {
   let image = useRef()
   let { messages } = useSelector(state => state.message)
 
-  
+
 
   const handleImage = (e) => {
     let file = e.target.files[0]
@@ -33,7 +33,11 @@ const MessageArea = () => {
   }
 
   const handleSendMessage = async (e) => {
+
     e.preventDefault()
+    if (input.length == 0 && backendImage == null) {
+      return
+    }
     try {
       let formData = new FormData()
       formData.append("message", input);
@@ -59,11 +63,11 @@ const MessageArea = () => {
 
   useEffect(() => {
     socket.on("newMessage", (mess) => {
-      dispatch(setMessages([...messages,mess]))
+      dispatch(setMessages([...messages, mess]))
     })
-    return ()=>socket.off("newMessage")
-  }, [messages,setMessages])
-  
+    return () => socket.off("newMessage")
+  }, [messages, setMessages])
+
 
   return (
     <div className={`lg:w-[70%] w-full h-full flex flex-col relative bg-slate-200 ${selectedUser ? "" : "hidden lg:flex"}`}>
@@ -98,9 +102,9 @@ const MessageArea = () => {
           {/* Scrollable message list */}
           <div className='flex-1 overflow-y-auto p-4 px-[20px] py-[30px]'>
             {messages && messages.map((mess) => (
-              mess.sender === userData._id ? 
-                <SenderMessage key={mess._id} image={mess.image} message={mess.message} /> 
-                : 
+              mess.sender === userData._id ?
+                <SenderMessage key={mess._id} image={mess.image} message={mess.message} />
+                :
                 <ReceiverMessage key={mess._id} image={mess.image} message={mess.message} />
             ))}
           </div>
@@ -137,13 +141,18 @@ const MessageArea = () => {
                 className='flex-1 h-full px-2 text-white text-[18px] bg-transparent outline-none placeholder-white'
               />
 
-              <FaRegImages 
-                className='w-[25px] h-[25px] text-white cursor-pointer' 
-                onClick={() => image.current.click()} 
+              <FaRegImages
+                className='w-[25px] h-[25px] text-white cursor-pointer'
+                onClick={() => image.current.click()}
               />
-              <button type="submit">
-                <IoMdSend className='w-[25px] h-[25px] text-white cursor-pointer' />
-              </button>
+
+              {
+                (input.length > 0 || backendImage != null) &&
+                ( <button type="submit">
+                  <IoMdSend className='w-[25px] h-[25px] text-white cursor-pointer' />
+                </button> )
+              }
+
 
             </form>
           </div>
