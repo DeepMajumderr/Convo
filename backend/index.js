@@ -11,7 +11,7 @@ import { app, server } from './socket/socket.js'
 
 const port = process.env.PORT || 5000
 
-// const app = express()
+const app = express()
 
 app.use(cors({
     origin: "https://convo-frontend-tnbn.onrender.com",
