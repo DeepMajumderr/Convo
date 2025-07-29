@@ -14,164 +14,169 @@ import { serverUrl } from '../main';
 import { setMessages } from '../redux/messageSlice';
 
 const MessageArea = () => {
-    const { selectedUser, userData, socket } = useSelector(state => state.user);
-    const dispatch = useDispatch();
-    const [showPicker, setShowPicker] = useState(false);
-    const [input, setinput] = useState("")
-    const [frontendImage, setfrontendImage] = useState(null)
-    const [backendImage, setbackendImage] = useState(null)
-    let image = useRef()
-    let { messages } = useSelector(state => state.message)
-    const messagesEndRef = useRef(null); // Ref for auto-scrolling
+  const { selectedUser, userData, socket } = useSelector(state => state.user);
+  const dispatch = useDispatch();
+  const [showPicker, setShowPicker] = useState(false);
+  const [input, setinput] = useState("")
+  const [frontendImage, setfrontendImage] = useState(null)
+  const [backendImage, setbackendImage] = useState(null)
+  let image = useRef()
+  let { messages } = useSelector(state => state.message)
+  const messagesEndRef = useRef(null); // Ref for auto-scrolling
 
-    const handleImage = (e) => {
-        let file = e.target.files[0]
-        setbackendImage(file)
-        setfrontendImage(URL.createObjectURL(file))
+  const handleImage = (e) => {
+    let file = e.target.files[0]
+    setbackendImage(file)
+    setfrontendImage(URL.createObjectURL(file))
+  }
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault()
+    if (input.length === 0 && backendImage === null) {
+      return
     }
-
-    const handleSendMessage = async (e) => {
-        e.preventDefault()
-        if (input.length === 0 && backendImage === null) {
-            return
-        }
-        try {
-            let formData = new FormData()
-            formData.append("message", input);
-            if (backendImage) {
-                formData.append("image", backendImage);
-            }
-            let result = await axios.post(`${serverUrl}/api/message/send/${selectedUser._id}`,
-                formData, { withCredentials: true }
-            )
-            dispatch(setMessages([...messages, result.data]))
-            setinput("")
-            setfrontendImage(null)
-            setbackendImage(null)
-        } catch (error) {
-            console.log(error)
-        }
+    try {
+      let formData = new FormData()
+      formData.append("message", input);
+      if (backendImage) {
+        formData.append("image", backendImage);
+      }
+      let result = await axios.post(`${serverUrl}/api/message/send/${selectedUser._id}`,
+        formData, { withCredentials: true }
+      )
+      dispatch(setMessages([...messages, result.data]))
+      setinput("")
+      setfrontendImage(null)
+      setbackendImage(null)
+    } catch (error) {
+      console.log(error)
     }
+  }
 
-    const onEmojiClick = (emojiData) => {
-        setinput((prevInput) => prevInput + emojiData.emoji)
-        setShowPicker(false)
-    }
+  const onEmojiClick = (emojiData) => {
+    setinput((prevInput) => prevInput + emojiData.emoji)
+    setShowPicker(false)
+  }
 
-    useEffect(() => {
-        socket.on("newMessage", (mess) => {
-            dispatch(setMessages([...messages, mess]))
-        })
-        return () => socket.off("newMessage")
-    }, [messages, setMessages, socket]) // Added socket to dependency array
+  useEffect(() => {
+    socket.on("newMessage", (mess) => {
+      dispatch(setMessages([...messages, mess]))
+    })
+    return () => socket.off("newMessage")
+  }, [messages, setMessages, socket]) // Added socket to dependency array
 
-    useEffect(() => {
-        // Scroll to bottom when messages change
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+  useEffect(() => {
+    // Scroll to bottom when messages change
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
 
-    return (
-        <div className={`lg:w-[70%] w-full h-screen flex flex-col relative bg-slate-200 ${
-            selectedUser ? "flex" : "hidden lg:flex"
-        }`}>
+  return (
+    <div className={`lg:w-[70%] w-full h-screen flex flex-col relative bg-slate-200 ${selectedUser ? "flex" : "hidden lg:flex"
+      }`}>
 
-            {/* Header */}
-            {selectedUser && (
-                <div className='h-[70px] md:h-[80px] lg:h-[100px] bg-[#1797c2] rounded-b-[30px] shadow-lg flex items-center px-3 md:px-4 lg:px-5 gap-2 md:gap-3 lg:gap-5'>
-                    <div className='cursor-pointer' onClick={() => dispatch(setSelectedUser(null))}>
-                        <IoMdArrowBack className='w-[22px] h-[22px] md:w-[25px] md:h-[25px] lg:w-[30px] lg:h-[30px] text-white' />
-                    </div>
+      {/* Header */}
+      {selectedUser && (
+        <div className='fixed top-0 left-0 right-0 z-10 h-[60px] md:h-[80px] lg:h-[100px] bg-[#1797c2] rounded-b-[30px] shadow-lg flex items-center px-3 md:px-4 lg:px-5 gap-2 md:gap-3 lg:gap-5'>
 
-                    <div className='w-[35px] h-[35px] md:w-[40px] md:h-[40px] lg:w-[50px] lg:h-[50px] rounded-full overflow-hidden shadow-lg'>
-                        <img src={selectedUser?.image || emptydp} className='w-full h-full object-cover' />
-                    </div>
+          {/* Back button for mobile only */}
+          <div className='md:hidden cursor-pointer' onClick={() => dispatch(setSelectedUser(null))}>
+            <IoMdArrowBack className='w-6 h-6 text-white' />
+          </div>
 
-                    <h1 className='text-white font-semibold text-[14px] md:text-[16px] lg:text-[20px]'>
-                        {selectedUser?.name || "User"}
-                    </h1>
-                </div>
-            )}
+          {/* User Image */}
+          <div className='w-[35px] h-[35px] md:w-[40px] md:h-[40px] lg:w-[50px] lg:h-[50px] rounded-full overflow-hidden shadow-lg'>
+            <img src={selectedUser?.image || emptydp} className='w-full h-full object-cover' />
+          </div>
 
-            {/* Welcome screen */}
-            {!selectedUser && (
-                <div className='flex-1 flex flex-col items-center justify-center px-4'>
-                    <h1 className='text-gray-700 font-bold text-[30px] md:text-[40px] lg:text-[50px] text-center'>
-                        Welcome to Convo
-                    </h1>
-                    <span className='text-gray-700 font-semibold text-[20px] md:text-[25px] lg:text-[30px]'>
-                        Let's Chat...
-                    </span>
-                </div>
-            )}
-
-            {/* Chat content */}
-            {selectedUser && (
-                <> {/* Use a fragment to group */}
-                    {/* Scrollable message list */}
-                    <div className='flex-1 overflow-y-auto p-2 md:p-3 lg:p-4 lg:px-[20px] lg:py-[30px]'>
-                        {messages && messages.map((mess) => (
-                            mess.sender === userData._id ?
-                                <SenderMessage key={mess._id} image={mess.image} message={mess.message} />
-                                :
-                                <ReceiverMessage key={mess._id} image={mess.image} message={mess.message} />
-                        ))}
-                        <div ref={messagesEndRef} /> {/* For auto-scrolling */}
-                    </div>
-
-                    {/* Emoji Picker */}
-                    {showPicker && (
-                        <div className="absolute bottom-[80px] left-1/2 -translate-x-1/2 md:bottom-[90px] lg:bottom-[110px] z-50"> {/* Adjusted positioning */}
-                            <EmojiPicker width={250} height={350} className='shadow-lg'
-                                onEmojiClick={onEmojiClick} />
-                        </div>
-                    )}
-
-                    {/* Input area */}
-                    <div className='w-full flex justify-center py-2 md:py-3'>
-                        {frontendImage && (
-                            <img
-                                src={frontendImage}
-                                alt=""
-                                className='w-[50px] md:w-[60px] lg:w-[80px] absolute bottom-[70px] right-[10px] md:right-[15%] lg:right-[20%] rounded-lg shadow-gray-400 shadow-lg' // Adjusted bottom
-                            />
-                        )}
-                        <form
-                            className='w-[95%] bg-[#1797c2] h-[45px] md:h-[50px] lg:h-[60px] flex items-center justify-between rounded-full shadow-lg px-3 md:px-4 lg:px-5 gap-2 md:gap-3 lg:gap-4'
-                            onSubmit={handleSendMessage}
-                        >
-
-                            <div onClick={() => setShowPicker(prev => !prev)}>
-                                <BsEmojiSunglasses className='w-[20px] h-[20px] md:w-[22px] md:h-[22px] lg:w-[25px] lg:h-[25px] text-white cursor-pointer' />
-                            </div>
-
-                            <input type="file" accept='image/*' ref={image} hidden onChange={handleImage} />
-
-                            <input
-                                type="text"
-                                value={input}
-                                onChange={(e) => setinput(e.target.value)}
-                                placeholder="Message..."
-                                className='flex-1 h-full px-2 text-white text-[14px] md:text-[16px] lg:text-[18px] bg-transparent outline-none placeholder-white'
-                            />
-
-                            <FaRegImages
-                                className='w-[20px] h-[20px] md:w-[22px] md:h-[22px] lg:w-[25px] lg:h-[25px] text-white cursor-pointer'
-                                onClick={() => image.current.click()}
-                            />
-
-                            {(input.length > 0 || backendImage !== null) && (
-                                <button type="submit">
-                                    <IoMdSend className='w-[20px] h-[20px] md:w-[22px] md:h-[22px] lg:w-[25px] lg:h-[25px] text-white cursor-pointer' />
-                                </button>
-                            )}
-
-                        </form>
-                    </div>
-                </>
-            )}
+          {/* User Name */}
+          <h1 className='text-white font-semibold text-sm md:text-base lg:text-xl'>
+            {selectedUser?.name || "User"}
+          </h1>
         </div>
-    );
+      )}
+
+
+
+      {/* Welcome screen */}
+      {!selectedUser && (
+        <div className='flex-1 flex flex-col items-center justify-center px-4'>
+          <h1 className='text-gray-700 font-bold text-[30px] md:text-[40px] lg:text-[50px] text-center'>
+            Welcome to Convo
+          </h1>
+          <span className='text-gray-700 font-semibold text-[20px] md:text-[25px] lg:text-[30px]'>
+            Let's Chat...
+          </span>
+        </div>
+      )}
+
+      {/* Chat content */}
+      {selectedUser && (
+        <> {/* Use a fragment to group */}
+          {/* Scrollable message list */}
+          <div className='flex-1 overflow-y-auto p-2 md:p-3 lg:p-4 lg:px-[20px] lg:py-[30px]'>
+            {messages && messages.map((mess) => (
+              mess.sender === userData._id ?
+                <SenderMessage key={mess._id} image={mess.image} message={mess.message} />
+                :
+                <ReceiverMessage key={mess._id} image={mess.image} message={mess.message} />
+            ))}
+            <div ref={messagesEndRef} /> {/* For auto-scrolling */}
+          </div>
+
+          {/* Emoji Picker */}
+          {showPicker && (
+            <div className="absolute bottom-[80px] left-1/2 -translate-x-1/2 md:bottom-[90px] lg:bottom-[110px] z-50"> {/* Adjusted positioning */}
+              <EmojiPicker width={250} height={350} className='shadow-lg'
+                onEmojiClick={onEmojiClick} />
+            </div>
+          )}
+
+          {/* Input area */}
+          <div className='w-full flex justify-center py-2 md:py-3'>
+            {frontendImage && (
+              <img
+                src={frontendImage}
+                alt=""
+                className='w-[50px] md:w-[60px] lg:w-[80px] absolute bottom-[70px] right-[10px] md:right-[15%] lg:right-[20%] rounded-lg shadow-gray-400 shadow-lg' // Adjusted bottom
+              />
+            )}
+            <form
+              className='w-[95%] bg-[#1797c2] h-[45px] md:h-[50px] lg:h-[60px] flex items-center justify-between rounded-full shadow-lg px-3 md:px-4 lg:px-5 gap-2 md:gap-3 lg:gap-4'
+              onSubmit={handleSendMessage}
+            >
+
+              <div onClick={() => setShowPicker(prev => !prev)}>
+                <BsEmojiSunglasses className='w-[20px] h-[20px] md:w-[22px] md:h-[22px] lg:w-[25px] lg:h-[25px] text-white cursor-pointer' />
+              </div>
+
+              <input type="file" accept='image/*' ref={image} hidden onChange={handleImage} />
+
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setinput(e.target.value)}
+                placeholder="Message..."
+                className='flex-1 h-full px-2 text-white text-[14px] md:text-[16px] lg:text-[18px] bg-transparent outline-none placeholder-white'
+              />
+
+              <FaRegImages
+                className='w-[20px] h-[20px] md:w-[22px] md:h-[22px] lg:w-[25px] lg:h-[25px] text-white cursor-pointer'
+                onClick={() => image.current.click()}
+              />
+
+              {(input.length > 0 || backendImage !== null) && (
+                <button type="submit">
+                  <IoMdSend className='w-[20px] h-[20px] md:w-[22px] md:h-[22px] lg:w-[25px] lg:h-[25px] text-white cursor-pointer' />
+                </button>
+              )}
+
+            </form>
+          </div>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default MessageArea;
