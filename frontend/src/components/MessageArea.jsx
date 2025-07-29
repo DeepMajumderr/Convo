@@ -77,20 +77,16 @@ const MessageArea = () => {
 
       {/* Header */}
       {selectedUser && (
-        <div className='fixed top-0 left-0 right-0 z-10 h-[60px] md:h-[80px] lg:h-[100px] bg-[#1797c2] rounded-b-[30px] shadow-lg flex items-center px-3 md:px-4 lg:px-5 gap-2 md:gap-3 lg:gap-5'>
-
-          {/* Back button for mobile only */}
-          <div className='md:hidden cursor-pointer' onClick={() => dispatch(setSelectedUser(null))}>
-            <IoMdArrowBack className='w-6 h-6 text-white' />
+        <div className='h-[60px] sm:h-[70px] md:h-[80px] lg:h-[100px] bg-[#1797c2] rounded-b-[20px] sm:rounded-b-[25px] lg:rounded-b-[30px] shadow-lg flex items-center px-3 sm:px-4 md:px-5 gap-2 sm:gap-3 md:gap-4 lg:gap-5'>
+          <div className='cursor-pointer' onClick={() => dispatch(setSelectedUser(null))}>
+            <IoMdArrowBack className='w-[18px] h-[18px] sm:w-[20px] sm:h-[20px] md:w-[22px] md:h-[22px] lg:w-[25px] lg:h-[25px] text-white' />
           </div>
 
-          {/* User Image */}
-          <div className='w-[35px] h-[35px] md:w-[40px] md:h-[40px] lg:w-[50px] lg:h-[50px] rounded-full overflow-hidden shadow-lg'>
+          <div className='w-[30px] h-[30px] sm:w-[35px] sm:h-[35px] md:w-[40px] md:h-[40px] lg:w-[50px] lg:h-[50px] rounded-full overflow-hidden shadow-lg'>
             <img src={selectedUser?.image || emptydp} className='w-full h-full object-cover' />
           </div>
 
-          {/* User Name */}
-          <h1 className='text-white font-semibold text-sm md:text-base lg:text-xl'>
+          <h1 className='text-white font-semibold text-[14px] sm:text-[15px] md:text-[16px] lg:text-[20px] truncate max-w-[150px] sm:max-w-[200px] md:max-w-none'>
             {selectedUser?.name || "User"}
           </h1>
         </div>
