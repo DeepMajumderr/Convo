@@ -60,18 +60,10 @@ const SideBar = () => {
 
     return (
         <div
-            className={`lg:w-[30%] w-full h-screen bg-slate-200 relative flex-col ${
-                !selectedUser ? 'flex' : 'hidden'
-            } lg:flex`}
+            className={`lg:w-[30%] w-full h-screen bg-slate-200 relative flex flex-col ${
+                !selectedUser ? 'block' : 'hidden'
+            } lg:block`} // Changed from 'flex' to 'block' and 'hidden' to 'block' for better mobile control
         >
-            {/* Logout Button */}
-            <div className="absolute bottom-[20px] left-[10px] w-[50px] h-[50px] lg:w-[60px] lg:h-[60px] bg-[#20c7ff] rounded-full flex items-center justify-center shadow-lg cursor-pointer">
-                <RiLogoutCircleLine
-                    onClick={handleLogout}
-                    className="w-[20px] h-[20px] lg:w-[25px] lg:h-[25px]"
-                />
-            </div>
-
             {/* Header */}
             <div className="w-full h-[200px] lg:h-[240px] bg-[#20c7ff] rounded-b-[30%] shadow-lg flex flex-col justify-center px-4 lg:px-5">
                 <h1 className="text-white font-bold text-xl lg:text-2xl">Convo</h1>
@@ -166,6 +158,16 @@ const SideBar = () => {
                         </h1>
                     </div>
                 ))}
+            </div>
+
+            {/* Logout Button (Moved to be a fixed part of SideBar's bottom) */}
+            <div className="sticky bottom-0 w-full flex justify-center py-3 bg-slate-200"> {/* Added sticky and background */}
+                <div className="w-[50px] h-[50px] lg:w-[60px] lg:h-[60px] bg-[#20c7ff] rounded-full flex items-center justify-center shadow-lg cursor-pointer">
+                    <RiLogoutCircleLine
+                        onClick={handleLogout}
+                        className="w-[20px] h-[20px] lg:w-[25px] lg:h-[25px] text-white"
+                    />
+                </div>
             </div>
         </div>
     );
