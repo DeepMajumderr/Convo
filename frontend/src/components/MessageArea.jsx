@@ -72,12 +72,13 @@ const MessageArea = () => {
 
 
   return (
-    <div className={`lg:w-[70%] w-full h-screen flex flex-col relative bg-slate-200 ${selectedUser ? "flex" : "hidden lg:flex"
-      }`}>
+    <div className={`lg:w-[70%] w-full h-screen flex flex-col relative bg-slate-200 overflow-hidden ${selectedUser ? "flex" : "hidden lg:flex"}`}>
+
 
       {/* Header */}
       {selectedUser && (
-        <div className='h-[60px] sm:h-[70px] md:h-[80px] lg:h-[100px] bg-[#1797c2] rounded-b-[20px] sm:rounded-b-[25px] lg:rounded-b-[30px] shadow-lg flex items-center px-3 sm:px-4 md:px-5 gap-2 sm:gap-3 md:gap-4 lg:gap-5'>
+        <div className='min-h-[60px] sm:min-h-[70px] md:min-h-[80px] lg:min-h-[100px] bg-[#1797c2] rounded-b-[20px] sm:rounded-b-[25px] lg:rounded-b-[30px] shadow-lg flex items-center px-3 sm:px-4 md:px-5 gap-2 sm:gap-3 md:gap-4 lg:gap-5'>
+
           <div className='cursor-pointer' onClick={() => dispatch(setSelectedUser(null))}>
             <IoMdArrowBack className='w-[18px] h-[18px] sm:w-[20px] sm:h-[20px] md:w-[22px] md:h-[22px] lg:w-[25px] lg:h-[25px] text-white' />
           </div>
