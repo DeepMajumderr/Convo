@@ -55,23 +55,61 @@ export  const getOtherUsers = async(req,res) => {
     }
 }
 
-export const search = async(req,res) => {
+// export const search = async(req,res) => {
+//     try {
+//         let {query} = req.query
+//         if(!query){
+//             return res.status(400).json({message:  "query is required"})
+//         }
+
+//         let users = await User.find({
+//             $or:[
+//                 {name: {$regex: query, $options:"i"}},
+//                 {userName: {$regex: query, $options:"i"}},
+//             ]
+//         })
+
+//         return res.status(200).json(users)
+
+//     } catch (error) {
+//         return res.status(500).json({ messaage: `search user error ${error}` })
+//     }
+// }
+
+
+export const search = async (req, res) => {
     try {
-        let {query} = req.query
-        if(!query){
-            return res.status(400).json({message:  "query is required"})
+        const { query } = req.query;
+
+        // Check if query is provided
+        if (!query) {
+            return res.status(400).json({ message: "Query is required" });
         }
 
-        let users = await User.find({
-            $or:[
-                {name: {$regex: query, $options:"i"}},
-                {userName: {$regex: query, $options:"i"}},
-            ]
-        })
+        // Get current user's ID from req.user
+        const currentUserId = req.userId;
 
-        return res.status(200).json(users)
+        if (!currentUserId) {
+            return res.status(401).json({ message: "Unauthorized: user ID not found" });
+        }
+
+        // Search for users excluding the current user
+        const users = await User.find({
+            $and: [
+                { _id: { $ne: currentUserId } }, // Exclude current user
+                {
+                    $or: [
+                        { name: { $regex: query, $options: "i" } },
+                        { userName: { $regex: query, $options: "i" } },
+                    ],
+                },
+            ],
+        }).select("-password"); // Exclude password field from results
+
+        return res.status(200).json(users);
 
     } catch (error) {
-        return res.status(500).json({ messaage: `search user error ${error}` })
+        console.error("Search error:", error);
+        return res.status(500).json({ message: `Search user error: ${error.message}` });
     }
-}
+};
